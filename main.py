@@ -1,10 +1,11 @@
 import discord
 from discord.ext import commands
 from datetime import datetime
-import requests
-
+import boto3
 
 now = datetime.now().time()
+
+s3 = boto3.resource(service_name = 's3')
 
 print('Logging in...')
 client = commands.Bot(command_prefix='.', help_command=None)
@@ -71,7 +72,7 @@ async def getid(ctx, user: discord.User):
 async def fakeban(ctx, member : discord.Member):
     try:
         embed: discord.Embed = discord.Embed(
-            title="You have been banned!", description="You may appeal here: [INSERT]", color=discord.Color.red()
+            title="You have been banned!", description="You may appeal here: https://forms.gle/pAsqDRs6iBk4Uxox5", color=discord.Color.red()
         )
 
         embed.set_author(name="ddozzi bot")
@@ -105,7 +106,7 @@ async def fakeunban(ctx, member : discord.Member):
     try:
         embed: discord.Embed = discord.Embed(
             title="You have been unbanned :)",
-            description="Thank you for appealing. You may join back here: [INSERT]",
+            description="Thank you for appealing. You may join back here: https://discord.gg/HGgV3Dhydb",
             color=discord.Color.dark_green()
         )
         embed.set_author(name="ddozzi bot")
@@ -155,6 +156,7 @@ async def mute(ctx, member: discord.Member, *, reason=None):
     f = open("log.txt", "a")
     f.write("\n[{0}] Muted {1} with user id of <@!{2}> for reason: {3}".format(now, member, member.id, reason))
     f.close()
+    s3.meta.client.upload_file(Filename='log.txt', Bucket='data-ban', Key='log.txt')
 
 #Unmute
 @client.command(description="Unmutes a specified user.")
@@ -167,7 +169,7 @@ async def unmute(ctx, member: discord.Member):
    await ctx.send(embed=embed)
    embed: discord.Embed = discord.Embed(
        title="You have been unmuted :)",
-       description="Thank you for waiting. You may join back here: [INSERT]",
+       description="Thank you for waiting. You may join back here: https://discord.gg/HGgV3Dhydb",
        color=discord.Color.dark_green()
    )
    embed.set_author(name="ddozzi bot")
@@ -264,8 +266,8 @@ async def help(ctx, option=None):
             color=discord.Color.blue()
         )
         #embed.add_field(name="Field1", value="hi", inline=True)
-        #embed.set_image(url='[INSERT]')
-        embed.set_thumbnail(url='[INSERT]')
+        #embed.set_image(url='https://i.imgur.com/kwe4c8u.png')
+        embed.set_thumbnail(url='https://i.imgur.com/kwe4c8u.png')
         embed.set_author(name="Scythe Plugin Commands")
         embed.add_field(name="FakeBan", value=" `.help fakeban`", inline=True)
         embed.add_field(name="Ping", value='`.help ping`', inline=True)
@@ -285,7 +287,7 @@ async def ban(ctx, member: discord.User, *, reason=None):
         print(member)
 
         embed: discord.Embed = discord.Embed(
-            title="You have been banned!", description="You may appeal here: [INSERT]",
+            title="You have been banned!", description="You may appeal here: https://forms.gle/pAsqDRs6iBk4Uxox5",
             color=discord.Color.red()
         )
         embed.set_author(name="ddozzi bot")
@@ -334,7 +336,7 @@ async def unban(ctx, *, user=None):
 
     embed: discord.Embed = discord.Embed(
         title="You have been unbanned :)",
-        description="Thank you for appealing. You may join back here: [INSERT]",
+        description="Thank you for appealing. You may join back here: https://discord.gg/HGgV3Dhydb",
         color=discord.Color.dark_green()
     )
     embed.set_author(name="ddozzi bot")
@@ -354,4 +356,6 @@ async def ping(ctx):
     await ctx.send(f'Pong! In {round(client.latency * 1000)}ms')
     print('Latency has been checked!')
 
-client.run('[INSERT api key]')
+client.run('ODExNzQxNjk0MDM4MjQ1Mzg3.YC2nXQ.ZbfPdtZbI-5zu1nf8sg92JvNl7E')
+
+'https://discord.com/api/oauth2/authorize?client_id=811741694038245387&permissions=8&scope=bot'
